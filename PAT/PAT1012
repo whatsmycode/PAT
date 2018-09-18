@@ -1,0 +1,99 @@
+#include <iostream>
+#include <map>
+#include <algorithm>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct Student{
+	int grade[3];
+	double ave;
+	int order;
+	char subject;
+};
+int findPosition(vector<int>& nums, int val)
+{
+	for (int i = 0; i < nums.size(); ++i)
+	{
+		if (nums[i] == val)
+			return i + 1;
+	}
+	return -1;
+}
+int findPosition(vector<double>& nums, double val)
+{
+	for (int i = 0; i < nums.size(); ++i)
+	{
+		if (nums[i] == val)
+			return i + 1;
+	}
+	return -1;
+}
+int main()
+{
+	int N, M;
+	cin >> N >> M;
+	map<string, Student>students;
+	vector<int>CRank;
+	vector<int>MRank;
+	vector<int>ERank;
+	vector<double>ARank;
+	while (N--)
+	{
+		string id;
+		int C, M, E;
+		cin >> id >> C >> M >> E;
+		students[id].grade[0] = C;
+		students[id].grade[1] = M;
+		students[id].grade[2] = E;
+		students[id].ave = (C + M + E) / 3.0;
+		MRank.push_back(M);
+		CRank.push_back(C);
+		ERank.push_back(E);
+		ARank.push_back(students[id].ave);
+	}
+	sort(CRank.rbegin(), CRank.rend());
+	sort(MRank.rbegin(), MRank.rend());
+	sort(ERank.rbegin(), ERank.rend());
+	sort(ARank.rbegin(), ARank.rend());
+	for (auto iter = students.begin(); iter != students.end(); ++iter)
+	{
+		Student& cur = iter->second;
+		cur.order = findPosition(ARank, cur.ave);
+		cur.subject = 'A';
+
+		int posC = findPosition(CRank, cur.grade[0]);
+		if (posC < cur.order)
+		{
+			cur.order = posC;
+			cur.subject = 'C';
+		}
+
+		int posM = findPosition(MRank, cur.grade[1]);
+		if (posM < cur.order)
+		{
+			cur.order = posM;
+			cur.subject = 'M';
+		}
+
+		int posE = findPosition(ERank, cur.grade[2]);
+		if (posE < cur.order)
+		{
+			cur.order = posE;
+			cur.subject = 'E';
+		}
+	}
+
+	while (M--)
+	{
+		string id;
+		cin >> id;
+		if (students.find(id) != students.end())
+		{
+			cout << students[id].order << " " << students[id].subject << endl;
+		}
+		else
+			cout << "N/A" << endl;
+	}
+	return 0;
+}
